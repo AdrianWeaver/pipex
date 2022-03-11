@@ -10,7 +10,7 @@ DEPS		=	$(OBJS:.o=.d)
 
 CC			=	gcc
 
-CFLAGS		=	-MMD -Wall -Wextra -Werror
+CFLAGS		=	-MMD -Wall -Wextra -Werror -g3
 INC			=	-I ./includes/\
 				-I ./not_my_libft/includes/
 
@@ -38,7 +38,12 @@ fclean:		clean
 re:			fclean all
 
 test:		re
-			./pipex "toto" "ls" #"wc -l" "zaza"
+			./pipex "toto" "sort" "cat -e" "zaza"
+			@echo "Now printing zaza file"
+			cat -e zaza
+
+valgrind:	all
+			valgrind ./pipex "toto" "ls -l" "wc -l" "zaza"
 
 -include $(DEPS)
 .PHONY:		all clean fclean re
