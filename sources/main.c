@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:19:28 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/11 16:36:21 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/11 18:09:43 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ void	ft_free_path(char **path)
 
 char	**ft_get_cmd(char *argv)
 {
-	char **cmd;
+	char	**cmd;
 
 	cmd = ft_split(argv, ' ');
 	return (cmd);
@@ -128,29 +128,44 @@ void    ft_reset_stdout(int *fd_pipe, int stdout_save)
     close(fd_pipe[READ_END]);
 }
 
-int	ft_exec_child(char **path, char **cmd, int infile_fd)
+int	ft_exec_child(char **path, char **cmd, int infile_fd, int outfile_fd)
 {
 	int		i;
 	int		exe_read;
-	int		save_stdout;
-	int		save_stdin;
-	int		pipe_fd_in[2];
-	int		pipe_fd_out[2];
+	int		pid;
+	int		pipe_fd[2];
 
 	i = 0;
 	exe_read = -1;
-	while (path[i] && exe_read == -1)
+	pipe(pipe_fd);
+	pid = fork(); //child writes parent reads
+	if (pid == 0)
 	{
-		if (access(path[i], X_OK) == 0)
+		dup2(infile_fd, STDIN_FILENO);
+		dup2(pipe_fd[WRITE_END], STDOUT_FILENO);
+		close(pipe_fd[READ_END]);
+		while (path[i] && exe_read == -1)
 		{
-			save_stdin = ft_pipe_stdin(pipe_fd_in, infile_fd);
-			save_stdout = ft_pipe_stdout(pipe_fd_out);	
-			exe_read = execve(ft_strcat(path[i], *cmd), cmd, path);
-			ft_reset_stdout(pipe_fd_out, save_stdout);
-			ft_reset_stdout(pipe_fd_in, save_stdin);
+			if (access(path[i], X_OK) == 0)
+				exe_read = execve(ft_strcat(path[i], *cmd), cmd, path);
+			i++;
 		}
-		i++;
+		close(infile_fd);
 	}
+	else if (pid != 0)
+	{
+		dup2(outfile_fd, STDOUT_FILENO);
+		dup2(pipe_fd[READ_END], STDIN_FILENO);
+		close(pipe_fd[WRITE_END]);
+		while (path[i] && exe_read == -1)
+		{
+			if (access(path[i], X_OK) == 0)
+				exe_read = execve(ft_strcat(path[i], *cmd), cmd, path);
+			i++;
+		}
+		close(outfile_fd);
+	}
+	dup2(1, STDOUT_FILENO);
 	if (exe_read == -1)
 	{
 		ft_free_path(path);
@@ -186,6 +201,7 @@ int	main(int argc, char **argv, char **envp)
 	char	**cmd1;
 	char	**cmd2;
 	int		infile_fd;
+	int		outfile_fd;
 
 	(void)cmd2;
 	ft_check_params(argc);
@@ -197,9 +213,10 @@ int	main(int argc, char **argv, char **envp)
 	if (pid == 0)
 	{
 		infile_fd = open(argv[1], O_RDONLY);
+		outfile_fd = open(argv[4], O_CREAT, O_WRONLY);
 		cmd1 = ft_get_cmd(argv[2]);
 		cmd2 = ft_get_cmd(argv[3]);
-		exit(ft_exec_child(path, cmd1, infile_fd));
+		exit(ft_exec_child(path, cmd1, infile_fd, outfile_fd));
 		//ft_exec_child(path, cmd2);
 	}
 	else
