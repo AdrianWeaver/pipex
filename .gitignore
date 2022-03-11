@@ -1,7 +1,8 @@
 toto
 zaza
-*.o
-*.d
-*.a
+*o
+*d
+*a
 *.swp
 *.swo
+pipex
