@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:19:28 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/11 18:09:43 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/14 13:48:48 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,47 +98,19 @@ char	**ft_get_cmd(char *argv)
 	return (cmd);
 }
 
-int ft_pipe_stdout(int *pipefd)
-{
-    int stdout_save;
-
-    stdout_save = dup(STDOUT_FILENO);
-    pipe(pipefd);
-    dup2(pipefd[WRITE_END], STDOUT_FILENO);
-    close(pipefd[WRITE_END]);
-    return (stdout_save);
-}
-
-int	ft_pipe_stdin(int *pipefd, int infile_fd)
-{
-	int	stdin_save;
-
-	stdin_save = dup(STDIN_FILENO);
-	pipe(pipefd);
-	dup2(pipefd[WRITE_END], infile_fd);
-	//close(pipefd[WRITE_END]); 
-	dup2(pipefd[READ_END], STDIN_FILENO);
-	//close(pipefd[READ_END]);
-	return (stdin_save);
-}
-
-void    ft_reset_stdout(int *fd_pipe, int stdout_save)
-{
-    dup2(stdout_save, STDOUT_FILENO);
-    close(fd_pipe[READ_END]);
-}
-
-int	ft_exec_child(char **path, char **cmd, int infile_fd, int outfile_fd)
+int	ft_exec_child(char **path, char **cmd, char **cmd2, int infile_fd, int outfile_fd)
 {
 	int		i;
 	int		exe_read;
 	int		pid;
 	int		pipe_fd[2];
+	int		w_status;
 
 	i = 0;
 	exe_read = -1;
 	pipe(pipe_fd);
 	pid = fork(); //child writes parent reads
+	wait(&w_status);
 	if (pid == 0)
 	{
 		dup2(infile_fd, STDIN_FILENO);
@@ -160,7 +132,7 @@ int	ft_exec_child(char **path, char **cmd, int infile_fd, int outfile_fd)
 		while (path[i] && exe_read == -1)
 		{
 			if (access(path[i], X_OK) == 0)
-				exe_read = execve(ft_strcat(path[i], *cmd), cmd, path);
+				exe_read = execve(ft_strcat(path[i], *cmd2), cmd2, path);
 			i++;
 		}
 		close(outfile_fd);
@@ -176,7 +148,6 @@ int	ft_exec_child(char **path, char **cmd, int infile_fd, int outfile_fd)
 	return (0);
 }
 
-
 void	ft_fork_fail(char **path)
 {
 	ft_free_path(path);
@@ -184,26 +155,47 @@ void	ft_fork_fail(char **path)
 	exit (0);
 }
 
-void	ft_open_inputfile(char *infile)
+int	ft_open_inputfile(char *infile, char **path)
 {
 	int	infile_fd;
 
 	infile_fd = open(infile, O_RDONLY);
 	if (infile_fd == -1)
-		return ; //add error handling
+	{
+		ft_printf(RED"File given as input doesnt exist or is forbidden\n"
+			NOCOLOUR);
+		ft_free_path(path);
+		perror("open ");
+		exit (-1);
+	}
+	return (infile_fd);
+}
+
+int	ft_open_outputfile(char *outfile, char **path)
+{
+	int	outfile_fd;
+
+	outfile_fd = open(outfile, O_RDWR | O_CREAT, 0666);
+	if (outfile_fd == -1)
+	{
+		ft_printf(RED"File given as output does not exist or is forbidden\n"
+			NOCOLOUR);
+		ft_free_path(path);
+		exit (-1);
+	}
+	return (outfile_fd);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	char	**path;
-	int		pid;
-	int		w_status;
 	char	**cmd1;
 	char	**cmd2;
 	int		infile_fd;
 	int		outfile_fd;
+	int		w_status;
+	int		pid;
 
-	(void)cmd2;
 	ft_check_params(argc);
 	path = ft_get_path(envp);
 	pid = fork();
@@ -212,14 +204,12 @@ int	main(int argc, char **argv, char **envp)
 	wait(&w_status);
 	if (pid == 0)
 	{
-		infile_fd = open(argv[1], O_RDONLY);
-		outfile_fd = open(argv[4], O_CREAT, O_WRONLY);
+		infile_fd = ft_open_inputfile(argv[1], path);
+		outfile_fd = ft_open_outputfile(argv[4], path);
 		cmd1 = ft_get_cmd(argv[2]);
 		cmd2 = ft_get_cmd(argv[3]);
-		exit(ft_exec_child(path, cmd1, infile_fd, outfile_fd));
-		//ft_exec_child(path, cmd2);
+		ft_exec_child(path, cmd1, cmd2, infile_fd, outfile_fd);
 	}
-	else
-		ft_free_path(path);	
+	ft_free_path(path);
 	return (0);
 }
