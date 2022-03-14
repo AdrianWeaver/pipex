@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:19:28 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 15:35:01 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/14 16:58:17 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,18 +27,6 @@ void	ft_check_params(int argc)
 		ft_printf(RED"Too many parameters given please provide 4\n"NOCOLOUR);
 		exit(0);
 	}
-}
-
-int	ft_nuke_malloc(char **path, int i)
-{
-	while (path[i])
-	{
-		free(path[i]);
-		i++;
-	}
-	free(path);
-	ft_printf(RED"Program encountered a memory error\n");
-	exit (-1);
 }
 
 char	**ft_cat_path(char *envp)
@@ -88,55 +76,12 @@ char	**ft_get_path(char **envp)
 	exit (0);
 }
 
-void	ft_free_path(char **path)
-{
-	int	i;
-
-	i = 0;
-	if (path == 0)
-		return ;
-	while (path[i])
-	{
-		free(path[i]);
-		i++;
-	}
-	free(path);
-}
-
-void	ft_free_cmd(char **cmd)
-{
-	int	i;
-
-	i = 0;
-	if (cmd == 0)
-		return ;
-	while (cmd[i])
-	{
-		free(cmd[i]);
-		i++;
-	}
-	free(cmd);
-}
-
 char	**ft_get_cmd(char *argv)
 {
 	char	**cmd;
 
 	cmd = ft_split(argv, ' ');
 	return (cmd);
-}
-
-void	ft_check_execve(char **path, char **cmd, int exe_read)
-{
-	if (exe_read == -1)
-	{
-		ft_free_path(path);
-		write(2, RED"Something went wrong, command wasn't found\n"
-			NOCOLOUR, 55);
-		perror("execve returned");
-		ft_free_cmd(cmd);
-		exit (-1);
-	}
 }
 
 int	ft_exec_child(char **path, char **cmd1, char **cmd2, int infile_fd, int outfile_fd)
@@ -189,13 +134,6 @@ int	ft_exec_child(char **path, char **cmd1, char **cmd2, int infile_fd, int outf
 	return (0);
 }
 
-void	ft_fork_fail(char **path)
-{
-	ft_free_path(path);
-	ft_printf(RED"The program encountered a critical failure\n");
-	exit (0);
-}
-
 int	ft_open_inputfile(char *infile, char **path)
 {
 	int	infile_fd;
@@ -230,13 +168,14 @@ int	ft_open_outputfile(char *outfile, char **path)
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	**path;
-	char	**cmd1;
-	char	**cmd2;
-	int		infile_fd;
-	int		outfile_fd;
-	int		w_status;
-	int		pid;
+	t_pipex_data	data;
+	char			**path;
+	char			**cmd1;
+	char			**cmd2;
+	int				infile_fd;
+	int				outfile_fd;
+	int				w_status;
+	int				pid;
 
 	ft_check_params(argc);
 	path = ft_get_path(envp);
