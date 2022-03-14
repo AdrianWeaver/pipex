@@ -43,7 +43,7 @@ test:		re
 			cat -e zaza
 
 valgrind:	all
-			valgrind ./pipex "toto" "ls -l" "wc -l" "zaza"
+			valgrind ./pipex "toto" "sort" "cat -e" "zaza"
 
 -include $(DEPS)
 .PHONY:		all clean fclean re
