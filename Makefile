@@ -3,7 +3,10 @@ NAME		=	pipex
 SRCS_PATH	=	./sources/
 OBJS_PATH	=	./objects/
 
-SRCS		=	main.c
+SRCS		=	main.c				\
+				ft_get_functions.c	\
+				ft_open_pipex.c		\
+				ft_free_functions.c
 
 OBJS		=	$(addprefix $(OBJS_PATH),$(SRCS:.c=.o))
 DEPS		=	$(OBJS:.o=.d)

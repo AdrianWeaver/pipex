@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:52:50 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 16:57:55 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/14 18:42:54 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,48 @@ void	ft_check_execve(char **path, char **cmd, int exe_read);
 #  define FT_FORK_FAIL
 
 void	ft_fork_fail(char **path);
+
+# endif
+
+# ifndef FT_OPEN_INPUTFILE
+#  define FT_OPEN_INPUTFILE
+
+int		ft_open_inputfile(char *infile, char **path);
+
+# endif
+
+# ifndef FT_OPEN_OUTPUTFILE
+#  define FT_OPEN_OUTPUTFILE
+
+int		ft_open_outputfile(char *outfile, char **path);
+
+# endif
+
+# ifndef FT_CHECK_PARAMS
+#  define FT_CHECK_PARAMS
+
+void	ft_check_params(int argc);
+
+# endif
+
+# ifndef FT_CAT_PATH
+#  define FT_CAT_PATH
+
+char	**ft_cat_path(char *envp);
+
+# endif
+
+# ifndef FT_GET_PATH
+#  define FT_GET_PATH
+
+char	**ft_get_path(char **envp);
+
+# endif
+
+# ifndef FT_GET_CMD
+#  define FT_GET_CMD
+
+char	**ft_get_cmd(char *argv);
 
 # endif
 
