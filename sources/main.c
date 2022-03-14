@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:19:28 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 13:48:48 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/14 15:35:01 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,18 @@ void	ft_check_params(int argc)
 	}
 }
 
+int	ft_nuke_malloc(char **path, int i)
+{
+	while (path[i])
+	{
+		free(path[i]);
+		i++;
+	}
+	free(path);
+	ft_printf(RED"Program encountered a memory error\n");
+	exit (-1);
+}
+
 char	**ft_cat_path(char *envp)
 {
 	int		i;
@@ -45,14 +57,13 @@ char	**ft_cat_path(char *envp)
 			path_len = ft_strlen(path[i]);
 			tmp = malloc(sizeof(*tmp) * (path_len) + 103);
 			if (tmp == 0)
-				return (0); //make error handle program
+				ft_nuke_malloc(path, i);
 			tmp = ft_strcpy(tmp, path[i]);
 			tmp[path_len] = '/';
 			tmp[path_len + 1] = 0;
 			free(path[i]);
 			path[i] = tmp;
 		}
-		//ft_printf("PATH : %s\n", path[i]);
 		i++;
 	}
 	return (path);
@@ -82,12 +93,29 @@ void	ft_free_path(char **path)
 	int	i;
 
 	i = 0;
+	if (path == 0)
+		return ;
 	while (path[i])
 	{
 		free(path[i]);
 		i++;
 	}
 	free(path);
+}
+
+void	ft_free_cmd(char **cmd)
+{
+	int	i;
+
+	i = 0;
+	if (cmd == 0)
+		return ;
+	while (cmd[i])
+	{
+		free(cmd[i]);
+		i++;
+	}
+	free(cmd);
 }
 
 char	**ft_get_cmd(char *argv)
@@ -98,7 +126,20 @@ char	**ft_get_cmd(char *argv)
 	return (cmd);
 }
 
-int	ft_exec_child(char **path, char **cmd, char **cmd2, int infile_fd, int outfile_fd)
+void	ft_check_execve(char **path, char **cmd, int exe_read)
+{
+	if (exe_read == -1)
+	{
+		ft_free_path(path);
+		write(2, RED"Something went wrong, command wasn't found\n"
+			NOCOLOUR, 55);
+		perror("execve returned");
+		ft_free_cmd(cmd);
+		exit (-1);
+	}
+}
+
+int	ft_exec_child(char **path, char **cmd1, char **cmd2, int infile_fd, int outfile_fd)
 {
 	int		i;
 	int		exe_read;
@@ -109,23 +150,28 @@ int	ft_exec_child(char **path, char **cmd, char **cmd2, int infile_fd, int outfi
 	i = 0;
 	exe_read = -1;
 	pipe(pipe_fd);
-	pid = fork(); //child writes parent reads
+	pid = fork();
 	wait(&w_status);
 	if (pid == 0)
 	{
+		ft_free_cmd(cmd2);
 		dup2(infile_fd, STDIN_FILENO);
 		dup2(pipe_fd[WRITE_END], STDOUT_FILENO);
 		close(pipe_fd[READ_END]);
 		while (path[i] && exe_read == -1)
 		{
 			if (access(path[i], X_OK) == 0)
-				exe_read = execve(ft_strcat(path[i], *cmd), cmd, path);
+			{
+				exe_read = execve(ft_strcat(path[i], *cmd1), cmd1, path);
+			}
 			i++;
 		}
+		ft_check_execve(path, cmd1, exe_read);
 		close(infile_fd);
 	}
-	else if (pid != 0)
+	else if (pid != 0 && WIFEXITED(w_status) == 1 && WEXITSTATUS(w_status) != -1)
 	{
+		ft_free_cmd(cmd1);
 		dup2(outfile_fd, STDOUT_FILENO);
 		dup2(pipe_fd[READ_END], STDIN_FILENO);
 		close(pipe_fd[WRITE_END]);
@@ -135,16 +181,11 @@ int	ft_exec_child(char **path, char **cmd, char **cmd2, int infile_fd, int outfi
 				exe_read = execve(ft_strcat(path[i], *cmd2), cmd2, path);
 			i++;
 		}
+		ft_check_execve(path, cmd2, exe_read);
 		close(outfile_fd);
 	}
-	dup2(1, STDOUT_FILENO);
-	if (exe_read == -1)
-	{
-		ft_free_path(path);
-		ft_printf(RED"Something went wrong, command wasn't found\n"
-			NOCOLOUR);
-		free(cmd);
-	}
+	//dup2(1, STDOUT_FILENO);
+	ft_free_cmd(cmd2);
 	return (0);
 }
 
@@ -164,8 +205,8 @@ int	ft_open_inputfile(char *infile, char **path)
 	{
 		ft_printf(RED"File given as input doesnt exist or is forbidden\n"
 			NOCOLOUR);
+		perror("open returned");
 		ft_free_path(path);
-		perror("open ");
 		exit (-1);
 	}
 	return (infile_fd);
@@ -180,6 +221,7 @@ int	ft_open_outputfile(char *outfile, char **path)
 	{
 		ft_printf(RED"File given as output does not exist or is forbidden\n"
 			NOCOLOUR);
+		perror("open returned");
 		ft_free_path(path);
 		exit (-1);
 	}
