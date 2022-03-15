@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:53:34 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 13:04:28 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 13:58:12 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,16 @@ void	ft_free_cmd(char **cmd)
 
 void	ft_check_execve(char **path, char **cmd, int exe_read, char *av)
 {
+	int	save_stdout;
+
 	if (exe_read == -1)
 	{
+		save_stdout = dup(STDOUT_FILENO);
+		dup2(STDERR_FILENO, STDOUT_FILENO);
 		ft_free_path(path);
 		ft_printf("%s: %s\n", strerror(errno), av);
 		ft_free_cmd(cmd);
+		dup2(save_stdout, STDOUT_FILENO);
 		exit (127);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 17:03:33 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 11:58:00 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 14:03:57 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 
 void	ft_check_params(int argc)
 {
+	int	save_stdout;
+
+	save_stdout = dup(STDOUT_FILENO);
+	dup2(STDERR_FILENO, STDOUT_FILENO);
 	if (argc < 5)
 	{
 		ft_printf(RED"Insufficient amount of parameters, provide 4\n"NOCOLOUR);
@@ -27,6 +31,7 @@ void	ft_check_params(int argc)
 		ft_printf(RED"Too many parameters given please provide 4\n"NOCOLOUR);
 		exit(1);
 	}
+	dup2(save_stdout, STDOUT_FILENO);
 }
 
 char	**ft_cat_path(char *envp)
@@ -61,6 +66,7 @@ char	**ft_get_path(char **envp, char **argv)
 {
 	if (envp == 0 || *envp == 0)
 	{
+		dup2(STDERR_FILENO, STDOUT_FILENO);
 		ft_printf("%s: %s: No such file or directory\n", argv[2], argv[3]);
 		exit (127);
 	}
@@ -70,6 +76,7 @@ char	**ft_get_path(char **envp, char **argv)
 			return (ft_cat_path(*envp));
 		envp++;
 	}
+	dup2(STDERR_FILENO, STDOUT_FILENO);
 	ft_printf("%s: %s: No such file or directory\n", argv[2], argv[3]);
 	exit (127);
 }
