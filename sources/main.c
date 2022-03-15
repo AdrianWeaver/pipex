@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:19:28 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 11:09:16 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 11:52:29 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ int	main(int argc, char **argv, char **envp)
 	int				pid;
 
 	ft_check_params(argc);
-	data.path = ft_get_path(envp);
+	data.path = ft_get_path(envp, argv);
 	pid = fork();
 	if (pid == -1)
 		ft_fork_fail(data.path);

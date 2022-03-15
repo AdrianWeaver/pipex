@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 17:03:33 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 11:21:58 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 11:58:00 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,11 @@ char	**ft_cat_path(char *envp)
 	return (path);
 }
 
-char	**ft_get_path(char **envp)
+char	**ft_get_path(char **envp, char **argv)
 {
 	if (envp == 0 || *envp == 0)
 	{
-		ft_printf(RED"It seems like the env is missing, are you for real?\n"
-			NOCOLOUR);
+		ft_printf("%s: %s: No such file or directory\n", argv[2], argv[3]);
 		exit (127);
 	}
 	while (*envp != 0)
@@ -71,8 +70,7 @@ char	**ft_get_path(char **envp)
 			return (ft_cat_path(*envp));
 		envp++;
 	}
-	ft_printf(RED"It seems like the PATH is missing from the env, but why?!\n"
-		" are you trying to sabotage this?!\n"NOCOLOUR);
+	ft_printf("%s: %s: No such file or directory\n", argv[2], argv[3]);
 	exit (127);
 }
 

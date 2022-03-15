@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 17:00:47 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 11:47:40 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 11:55:22 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 #include "libftprintf.h"
 #include "ft_pipex.h"
 #include "not_my_libft.h"
-#include "errno.h"
-#include "string.h"
 
 int	ft_open_inputfile(char *infile, char **path)
 {
