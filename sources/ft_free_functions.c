@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:53:34 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 11:39:22 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 13:04:28 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,12 @@ void	ft_free_cmd(char **cmd)
 	free(cmd);
 }
 
-void	ft_check_execve(char **path, char **cmd, int exe_read)
+void	ft_check_execve(char **path, char **cmd, int exe_read, char *av)
 {
 	if (exe_read == -1)
 	{
 		ft_free_path(path);
-		perror("");
+		ft_printf("%s: %s\n", strerror(errno), av);
 		ft_free_cmd(cmd);
 		exit (127);
 	}

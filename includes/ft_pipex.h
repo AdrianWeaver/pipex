@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:52:50 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 11:55:13 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 12:04:14 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	ft_free_cmd(char **cmd);
 # ifndef FT_CHECK_EXECVE
 #  define FT_CHECK_EXECVE
 
-void	ft_check_execve(char **path, char **cmd, int exe_read);
+void	ft_check_execve(char **path, char **cmd, int exe_read, char *av);
 
 # endif
 
