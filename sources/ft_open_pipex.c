@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 17:00:47 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 18:51:38 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 09:20:35 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	ft_open_outputfile(char *outfile, char **path)
 {
 	int	outfile_fd;
 
-	outfile_fd = open(outfile, O_RDWR | O_CREAT, 0666);
+	outfile_fd = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (outfile_fd == -1)
 	{
 		ft_printf(RED"File given as output does not exist or is forbidden\n"

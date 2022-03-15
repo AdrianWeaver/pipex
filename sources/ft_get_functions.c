@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 17:03:33 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 18:39:48 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 09:04:48 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 void	ft_check_params(int argc)
 {
-	if (argc < 2)
+	if (argc < 5)
 	{
 		ft_printf(RED"Insufficient amount of parameters, provide 4\n"NOCOLOUR);
 		exit(0);

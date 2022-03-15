@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:19:28 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 19:27:58 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 11:09:16 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ int	ft_write_child(t_pipex_data *data, int infile_fd, int *pipe_fd)
 	ft_free_cmd(data->cmd2);
 	dup2(infile_fd, STDIN_FILENO);
 	dup2(pipe_fd[WRITE_END], STDOUT_FILENO);
+	close(infile_fd);
+	close(pipe_fd[WRITE_END]);
 	close(pipe_fd[READ_END]);
 	while (data->path[i] && exe_read == -1)
 	{
@@ -54,8 +56,10 @@ int	ft_read_child(t_pipex_data *data, int outfile_fd, int *pipe_fd)
 	while (data->path[i] && exe_read == -1)
 	{
 		if (access(data->path[i], X_OK) == 0)
+		{
 			exe_read = execve(ft_strcat(data->path[i], data->cmd2[0]),
 					data->cmd2, data->path);
+		}
 		i++;
 	}
 	ft_check_execve(data->path, data->cmd2, exe_read);
@@ -67,17 +71,24 @@ int	ft_exec_child(t_pipex_data *data, int infile_fd, int outfile_fd)
 {
 	int		pid;
 	int		pipe_fd[2];
-	int		w_status;
 
 	pipe(pipe_fd);
 	pid = fork();
-	wait(&w_status);
-	if (pid == 0)
+	if (pid == -1)
+	{
+		ft_free_cmd(data->cmd1);
+		ft_free_cmd(data->cmd2);
+		ft_fork_fail(data->path);
+	}
+	else if (pid == 0)
+	{
 		ft_write_child(data, infile_fd, pipe_fd);
-	else if (pid != 0 && WIFEXITED(w_status) == 1
-		&& WEXITSTATUS(w_status) != -1)
+	}
+	else if (pid != 0)
+	{
 		ft_read_child(data, outfile_fd, pipe_fd);
-	ft_free_cmd(data->cmd2);
+		ft_free_cmd(data->cmd2);
+	}
 	return (0);
 }
 
