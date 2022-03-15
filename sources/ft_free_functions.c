@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:53:34 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 19:26:55 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 11:21:01 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ int	ft_nuke_malloc(char **path, int i)
 	}
 	free(path);
 	ft_printf(RED"Program encountered a memory error\n");
-	exit (-1);
+	perror("");
+	exit (12);
 }
 
 void	ft_free_path(char **path)
@@ -66,7 +67,7 @@ void	ft_check_execve(char **path, char **cmd, int exe_read)
 			NOCOLOUR, 55);
 		perror("execve returned");
 		ft_free_cmd(cmd);
-		exit (-1);
+		exit (127);
 	}
 }
 
@@ -74,5 +75,5 @@ void	ft_fork_fail(char **path)
 {
 	ft_free_path(path);
 	ft_printf(RED"The program encountered a critical failure\n");
-	exit (0);
+	exit (1);
 }

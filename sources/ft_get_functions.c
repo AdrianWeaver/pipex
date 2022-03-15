@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 17:03:33 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/15 09:04:48 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 11:21:58 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ void	ft_check_params(int argc)
 	if (argc < 5)
 	{
 		ft_printf(RED"Insufficient amount of parameters, provide 4\n"NOCOLOUR);
-		exit(0);
+		exit(1);
 	}
 	if (argc > 5)
 	{
 		ft_printf(RED"Too many parameters given please provide 4\n"NOCOLOUR);
-		exit(0);
+		exit(1);
 	}
 }
 
@@ -63,7 +63,7 @@ char	**ft_get_path(char **envp)
 	{
 		ft_printf(RED"It seems like the env is missing, are you for real?\n"
 			NOCOLOUR);
-		exit (0);
+		exit (127);
 	}
 	while (*envp != 0)
 	{
@@ -73,7 +73,7 @@ char	**ft_get_path(char **envp)
 	}
 	ft_printf(RED"It seems like the PATH is missing from the env, but why?!\n"
 		" are you trying to sabotage this?!\n"NOCOLOUR);
-	exit (0);
+	exit (127);
 }
 
 char	**ft_get_cmd(char *argv)
