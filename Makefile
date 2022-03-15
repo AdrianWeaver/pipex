@@ -27,7 +27,7 @@ $(NAME):		$(OBJS) $(NOTLIBFT)
 				$(CC) $(CFLAGS) $(OBJS) -o $@ $(INC) $(NOTLIBFT)
 
 $(NOTLIBFT):
-				@make $(SILENT)-C $(NOTLIBFT_PATH)
+				@make $(SILENT) -C $(NOTLIBFT_PATH)
 
 $(OBJS_PATH)%.o:	$(SRCS_PATH)%.c
 					@mkdir -p $(OBJS_PATH)
