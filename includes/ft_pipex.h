@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/07 16:52:50 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 18:42:54 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 12:04:14 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <stdio.h>
+# include <string.h>
+# include <errno.h>
 
 typedef struct s_pipex_data
 {
@@ -52,7 +54,7 @@ void	ft_free_cmd(char **cmd);
 # ifndef FT_CHECK_EXECVE
 #  define FT_CHECK_EXECVE
 
-void	ft_check_execve(char **path, char **cmd, int exe_read);
+void	ft_check_execve(char **path, char **cmd, int exe_read, char *av);
 
 # endif
 
@@ -94,7 +96,7 @@ char	**ft_cat_path(char *envp);
 # ifndef FT_GET_PATH
 #  define FT_GET_PATH
 
-char	**ft_get_path(char **envp);
+char	**ft_get_path(char **envp, char **argv);
 
 # endif
 

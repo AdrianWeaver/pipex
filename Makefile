@@ -13,12 +13,13 @@ DEPS		=	$(OBJS:.o=.d)
 
 CC			=	gcc
 
-CFLAGS		=	-MMD -Wall -Wextra -Werror -g3
+CFLAGS		=	-MMD -Wall -Wextra -Werror
 INC			=	-I ./includes/\
 				-I ./not_my_libft/includes/
 
 NOTLIBFT	=	$(NOTLIBFT_PATH)libnotmylibft.a
 NOTLIBFT_PATH = ./not_my_libft/
+SILENT		=	--no-print-directory
 
 all:			$(NAME)
 
@@ -26,7 +27,7 @@ $(NAME):		$(OBJS) $(NOTLIBFT)
 				$(CC) $(CFLAGS) $(OBJS) -o $@ $(INC) $(NOTLIBFT)
 
 $(NOTLIBFT):
-				@make -C $(NOTLIBFT_PATH)
+				@make $(SILENT) -C $(NOTLIBFT_PATH)
 
 $(OBJS_PATH)%.o:	$(SRCS_PATH)%.c
 					@mkdir -p $(OBJS_PATH)
@@ -38,7 +39,8 @@ clean:
 fclean:		clean
 			@rm -f $(NAME)
 
-re:			fclean all
+re:			fclean
+			@make $(SILENT) all
 
 test:		re
 			./pipex "toto" "sort" "cat -e" "zaza"

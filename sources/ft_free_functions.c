@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 16:53:34 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 19:26:55 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 13:58:12 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ int	ft_nuke_malloc(char **path, int i)
 		i++;
 	}
 	free(path);
-	ft_printf(RED"Program encountered a memory error\n");
-	exit (-1);
+	perror("");
+	exit (12);
 }
 
 void	ft_free_path(char **path)
@@ -57,22 +57,25 @@ void	ft_free_cmd(char **cmd)
 	free(cmd);
 }
 
-void	ft_check_execve(char **path, char **cmd, int exe_read)
+void	ft_check_execve(char **path, char **cmd, int exe_read, char *av)
 {
+	int	save_stdout;
+
 	if (exe_read == -1)
 	{
+		save_stdout = dup(STDOUT_FILENO);
+		dup2(STDERR_FILENO, STDOUT_FILENO);
 		ft_free_path(path);
-		write(2, RED"Something went wrong, command wasn't found\n"
-			NOCOLOUR, 55);
-		perror("execve returned");
+		ft_printf("%s: %s\n", strerror(errno), av);
 		ft_free_cmd(cmd);
-		exit (-1);
+		dup2(save_stdout, STDOUT_FILENO);
+		exit (127);
 	}
 }
 
 void	ft_fork_fail(char **path)
 {
 	ft_free_path(path);
-	ft_printf(RED"The program encountered a critical failure\n");
-	exit (0);
+	perror("");
+	exit (1);
 }

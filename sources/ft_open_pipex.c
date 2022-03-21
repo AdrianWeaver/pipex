@@ -6,7 +6,7 @@
 /*   By: aweaver <aweaver@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/03/14 17:00:47 by aweaver           #+#    #+#             */
-/*   Updated: 2022/03/14 18:51:38 by aweaver          ###   ########.fr       */
+/*   Updated: 2022/03/15 11:55:22 by aweaver          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,10 @@ int	ft_open_inputfile(char *infile, char **path)
 	infile_fd = open(infile, O_RDONLY);
 	if (infile_fd == -1)
 	{
-		ft_printf(RED"File given as input doesnt exist or is forbidden\n"
-			NOCOLOUR);
-		perror("open returned");
+		dup2(1, STDOUT_FILENO);
+		ft_printf("%s: %s\n", strerror(errno), infile);
 		ft_free_path(path);
-		exit (-1);
+		exit (1);
 	}
 	return (infile_fd);
 }
@@ -35,14 +34,13 @@ int	ft_open_outputfile(char *outfile, char **path)
 {
 	int	outfile_fd;
 
-	outfile_fd = open(outfile, O_RDWR | O_CREAT, 0666);
+	outfile_fd = open(outfile, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (outfile_fd == -1)
 	{
-		ft_printf(RED"File given as output does not exist or is forbidden\n"
-			NOCOLOUR);
-		perror("open returned");
+		dup2(1, STDOUT_FILENO);
+		ft_printf("%s: %s\n", strerror(errno), outfile);
 		ft_free_path(path);
-		exit (-1);
+		exit (1);
 	}
 	return (outfile_fd);
 }
